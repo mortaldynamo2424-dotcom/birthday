@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Komal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-pink: #ff85a2;
+            --soft-pink: #fbb1bd;
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-color: #4a4a4a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fff5f7 0%, #fbb1bd 100%);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+        }
+
+        /* --- Background Elements --- */
+        .flower-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating {
+            position: absolute;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        /* --- Glassmorphism Container --- */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 500px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
+        }
+
+        .hidden { display: none !important; }
+
+        h1 { font-family: 'Dancing Script', cursive; font-size: 3rem; color: #d63384; margin-bottom: 20px; }
+        p { margin-bottom: 20px; line-height: 1.6; }
+
+        .btn {
+            background: #ff4d6d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+        }
+
+        .btn:hover { transform: scale(1.05); background: #ff758f; }
+
+        /* --- Section 1: Welcome --- */
+        #welcome-screen img { width: 100px; margin-bottom: 20px; }
+
+        /* --- Section 2: Envelope --- */
+        .envelope-wrapper {
+            position: relative;
+            width: 200px;
+            height: 150px;
+            background: #fff;
+            margin: 50px auto;
+            cursor: pointer;
+            transition: 0.5s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .envelope-wrapper:before {
+            content: ""; position: absolute;
+            top: 0; left: 0; width: 0; height: 0;
+            border-style: solid;
+            border-width: 75px 100px 0 100px;
+            border-color: #fbb1bd transparent transparent transparent;
+            z-index: 2;
+            transition: 0.5s;
+            transform-origin: top;
+        }
+
+        .envelope-wrapper.open:before { transform: rotateX(180deg); }
+        .letter-small {
+            position: absolute;
+            top: 10px; left: 10px; width: 180px; height: 130px;
+            background: white; z-index: 1; transition: 0.5s;
+        }
+        .envelope-wrapper.open .letter-small { transform: translateY(-50px); }
+
+        /* --- Section 3: Typing Letter --- */
+        #letter-text { font-style: italic; font-size: 1.1rem; min-height: 150px; text-align: left; }
+
+        /* --- Section 4: Cake --- */
+        .cake-container { position: relative; height: 200px; margin-top: 20px;}
+        .cake {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 150px; height: 100px; background: #f4d03f;
+            border-radius: 10px 10px 0 0; box-shadow: inset 0 -10px 0 #e67e22;
+        }
+        .cake::after {
+            content: ""; position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            width: 10px; height: 25px; background: #e74c3c; border-radius: 5px;
+        }
+        .candle-flame {
+            position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+            width: 12px; height: 18px; background: orange; border-radius: 50%;
+            animation: flicker 0.5s infinite alternate;
+        }
+        @keyframes flicker { from { opacity: 0.8; transform: translateX(-50%) scale(1); } to { opacity: 1; transform: translateX(-50%) scale(1.1); } }
+        .cut-line { 
+            position: absolute; top: 50%; left: 0; width: 100%; height: 2px; 
+            background: white; display: none; 
+        }
+
+        /* --- Section 5: Proposal --- */
+        #no-btn { position: absolute; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .btn-group { height: 100px; position: relative; margin-top: 30px;}
+
+        /* --- Confetti & Hearts --- */
+        .particle { position: fixed; pointer-events: none; z-index: 100; }
+
+        @media (max-width: 480px) {
+            .container { padding: 25px; }
+            h1 { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="flower-bg" id="flower-bg"></div>
+
+    <!-- 1. Welcome Screen -->
+    <div id="welcome-screen" class="container">
+        <img src="https://cdn-icons-png.flaticon.com/512/3468/3468306.png" alt="Flowers">
+        <h1>Hi Komal!</h1>
+        <p>I have a little surprise for you. Ready to see it?</p>
+        <button class="btn" onclick="nextStep(1)">Yes, Let's go! ❤️</button>
+    </div>
+
+    <!-- 2. Envelope Screen -->
+    <div id="envelope-screen" class="container hidden">
+        <h1>A Letter for You</h1>
+        <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
+            <div class="letter-small"></div>
+        </div>
+        <p>Click the envelope to open it</p>
+    </div>
+
+    <!-- 3. Typing Letter Screen -->
+    <div id="letter-screen" class="container hidden">
+        <h1>Dear Komal...</h1>
+        <div id="letter-text"></div>
+        <button id="letter-next-btn" class="btn hidden" onclick="nextStep(3)">Next Surprise 🎂</button>
+    </div>
+
+    <!-- 4. Birthday Cake Screen -->
+    <div id="cake-screen" class="container hidden">
+        <h1>Make a Wish!</h1>
+        <div class="cake-container">
+            <div class="cake">
+                <div class="candle-flame" id="flame"></div>
+                <div class="cut-line" id="cake-cut"></div>
+            </div>
+        </div>
+        <p id="cake-status">Wishing you the happiest birthday ever!</p>
+        <button class="btn" id="cut-btn" onclick="cutCake()">Cut the Cake 🍰</button>
+    </div>
+
+    <!-- 5. Proposal Screen -->
+    <div id="proposal-screen" class="container hidden">
+        <h1>Komal...</h1>
+        <p style="font-size: 1.2rem;">Will you be mine forever?</p>
+        <div class="btn-group">
+            <button class="btn" id="yes-btn" onclick="finalCelebrate()">YES!</button>
+            <button class="btn" id="no-btn" onmouseover="dodgeButton()" onclick="dodgeButton()">No</button>
+        </div>
+    </div>
+
+    <!-- 6. Final Screen -->
+    <div id="final-screen" class="container hidden">
+        <h1>Yay! ❤️</h1>
+        <p>I am the luckiest guy in the world.</p>
+        <h2 style="font-family: 'Dancing Script'; font-size: 2.5rem; color: #ff4d6d;">I Love You, Komal!</h2>
+        <p style="margin-top: 20px;">- Yours, Vansh</p>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const screens = [
+            'welcome-screen', 
+            'envelope-screen', 
+            'letter-screen', 
+            'cake-screen', 
+            'proposal-screen', 
+            'final-screen'
+        ];
+
+        // 1. Background Flowers
+        function createFlower() {
+            const flower = document.createElement('div');
+            flower.className = 'floating';
+            flower.innerHTML = ['🌸', '🌺', '🌷', '✨'][Math.floor(Math.random() * 4)];
+            flower.style.left = Math.random() * 100 + 'vw';
+            flower.style.top = Math.random() * 100 + 'vh';
+            flower.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            flower.style.animationDuration = (Math.random() * 3 + 4) + 's';
+            document.getElementById('flower-bg').appendChild(flower);
+        }
+        for(let i=0; i<15; i++) createFlower();
+
+        // Navigation
+        function nextStep(step) {
+            document.getElementById(screens[step]).classList.add('hidden');
+            document.getElementById(screens[step+1]).classList.remove('hidden');
+            
+            if(step === 1) startTyping();
+        }
+
+        // 2. Open Envelope
+        function openEnvelope() {
+            document.getElementById('envelope').classList.add('open');
+            setTimeout(() => nextStep(1), 1200);
+        }
+
+        // 3. Typing Effect
+        const message = "On this special day, I just want to tell you how much you mean to me. Every moment with you is like a beautiful dream. You are the most wonderful person I've ever known, and I'm so lucky to have you. Happy Birthday, my love! ❤️";
+        function startTyping() {
+            let i = 0;
+            const textEl = document.getElementById('letter-text');
+            function type() {
+                if (i < message.length) {
+                    textEl.innerHTML += message.charAt(i);
+                    i++;
+                    setTimeout(type, 50);
+                } else {
+                    document.getElementById('letter-next-btn').classList.remove('hidden');
+                }
+            }
+            type();
+        }
+
+        // 4. Cake Cutting
+        function cutCake() {
+            document.getElementById('flame').style.display = 'none';
+            document.getElementById('cake-cut').style.display = 'block';
+            document.getElementById('cake-status').innerText = "Mmm... Delicious! Just like you! 😉";
+            confettiEffect();
+            setTimeout(() => nextStep(3), 2500);
+        }
+
+        // 5. Dodging No Button
+        let dodgeCount = 0;
+        const funnyMessages = [
+            "Wait, what?",
+            "Are you sure?",
+            "Think again! 😜",
+            "Error 404: No not found",
+            "Nice try, Komal!",
+            "You mean Yes, right?",
+            "Click the other one!"
+        ];
+
+        function dodgeButton() {
+            if (dodgeCount < 6) {
+                const btn = document.getElementById('no-btn');
+                const x = Math.random() * (window.innerWidth - 100);
+                const y = Math.random() * (window.innerHeight - 50);
+                
+                btn.style.position = 'fixed';
+                btn.style.left = x + 'px';
+                btn.style.top = y + 'px';
+                btn.innerText = funnyMessages[dodgeCount];
+                dodgeCount++;
+            } else {
+                // After few times, let it stay but make it tiny
+                document.getElementById('no-btn').style.transform = 'scale(0.5)';
+                document.getElementById('no-btn').innerText = "Okay, fine...";
+            }
+        }
+
+        // 6. Celebration Logic
+        function finalCelebrate() {
+            nextStep(4);
+            setInterval(confettiEffect, 500);
+            createHearts();
+        }
+
+        // Effects
+        function confettiEffect() {
+            for(let i=0; i<30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.innerHTML = '🎉';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.top = '100vh';
+                p.style.transition = `all ${Math.random() * 2 + 1}s ease-out`;
+                document.body.appendChild(p);
+                
+                setTimeout(() => {
+                    p.style.transform = `translateY(-120vh) translateX(${Math.random() * 200 - 100}px) rotate(${Math.random() * 360}deg)`;
+                    p.style.opacity = '0';
+                }, 10);
+                setTimeout(() => p.remove(), 3000);
+            }
+        }
+
+        function createHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'particle';
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.bottom = '0';
+                heart.style.fontSize = '2rem';
+                heart.style.transition = `all 4s linear`;
+                document.body.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.style.transform = `translateY(-100vh)`;
+                    heart.style.opacity = '0';
+                }, 10);
+                setTimeout(() => heart.remove(), 4000);
+            }, 300);
+        }
+    </script>
+</body>
+</html>
